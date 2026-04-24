@@ -45,6 +45,7 @@
 #include "app.h"
 
 extern struct netif gnetif;
+extern UART_HandleTypeDef huart3;
 void MX_LWIP_Process(void);
 /* USER CODE END Includes */
 
@@ -55,13 +56,13 @@ void MX_LWIP_Process(void);
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-void debug_print(const char *msg) { 
-  HAL_UART_Transmit(&huart3, (const uint8_t*)msg, strlen(msg), HAL_MAX_DELAY); 
+void debug_print(const char *msg) {
+  HAL_UART_Transmit(&huart3, (const uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
 }
 void debug_print_error(const char *msg, int rc) {
   char buf[128];
   snprintf(buf, sizeof(buf), "Error: %s, rc: %d\r\n", msg, rc);
-  HAL_UART_Transmit(&huart3, (const uint8_t*)buf, strlen(buf), HAL_MAX_DELAY);
+  HAL_UART_Transmit(&huart3, (const uint8_t *)buf, strlen(buf), HAL_MAX_DELAY);
 }
 /* USER CODE END PD */
 

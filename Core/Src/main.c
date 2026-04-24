@@ -18,13 +18,13 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "can.h"
 #include "cmsis_os.h"
 #include "dma.h"
 #include "gpio.h"
 #include "lwip.h"
 #include "usart.h"
 #include "usb_device.h"
-
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -76,7 +76,7 @@ int main(void) {
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
-  MPU_Config();
+clear  MPU_Config();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -99,8 +99,11 @@ int main(void) {
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART3_UART_Init();
+  MX_CAN1_Init();
+  MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
-
+  char *test_msg = "=== System Booting ===\r\n";
+  HAL_UART_Transmit(&huart3, (uint8_t *)test_msg, strlen(test_msg), 1000);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
@@ -175,7 +178,16 @@ void SystemClock_Config(void) {
 }
 
 /* USER CODE BEGIN 4 */
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
 
+PUTCHAR_PROTOTYPE {
+  HAL_UART_Transmit(&huart3, (uint8_t *)&ch, 1, 0xFFFF);
+  return ch;
+}
 /* USER CODE END 4 */
 
 /* MPU Configuration */
