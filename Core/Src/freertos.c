@@ -19,9 +19,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
-#include "cmsis_os.h"
-#include "main.h"
 #include "task.h"
+#include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -123,7 +123,7 @@ volatile uint8_t shared_can_data[8] = {0, 0, 0, 0,
 osThreadId canTxTaskHandle; // CAN送信タスクのハンドル
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
-uint32_t defaultTaskBuffer[3000];
+uint32_t defaultTaskBuffer[ 3000 ];
 osStaticThreadDef_t defaultTaskControlBlock;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -131,19 +131,18 @@ osStaticThreadDef_t defaultTaskControlBlock;
 void led_subscription_callback(const void *msgin) {
   on_led_subscription_callback(msgin);
 }
+void StartCanTxTask(void const * argument);
+void StartPIDTask(void const * argument);
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const *argument);
-void StartCanTxTask(void const *argument);
+void StartDefaultTask(void const * argument);
 
 extern void MX_USB_DEVICE_Init(void);
 extern void MX_LWIP_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
-                                   StackType_t **ppxIdleTaskStackBuffer,
-                                   uint32_t *pulIdleTaskStackSize);
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
 
 /* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
 static StaticTask_t xIdleTaskTCBBuffer;
@@ -160,10 +159,10 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
@@ -187,15 +186,17 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadStaticDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 3000,
-                    defaultTaskBuffer, &defaultTaskControlBlock);
+  osThreadStaticDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 3000, defaultTaskBuffer, &defaultTaskControlBlock);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   osThreadDef(canTxTask, StartCanTxTask, osPriorityNormal, 0, 256);
   canTxTaskHandle = osThreadCreate(osThread(canTxTask), NULL);
+  osThreadDef(pidTask, StartPIDTask, osPriorityNormal, 0, 256);
+  osThreadCreate(osThread(pidTask), NULL);
   /* USER CODE END RTOS_THREADS */
+
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -205,7 +206,8 @@ void MX_FREERTOS_Init(void) {
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const *argument) {
+void StartDefaultTask(void const * argument)
+{
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
 
@@ -284,4 +286,8 @@ void StartCanTxTask(void const *argument) {
     osDelay(20);
   }
 }
+void StartPIDTask(void const *argument) {
+  pid_control_loop(argument);
+}
 /* USER CODE END Application */
+
