@@ -5,6 +5,7 @@
 #include "can.h"
 #include "can_utils.hpp"
 #include <algorithm>
+#include <stdio.h>
 
 /// @brief VESC ESCコントローラークラス
 class VESC {
@@ -148,7 +149,7 @@ class VESC {
     txData[2] = (value >> 8) & 0xFF;
     txData[3] = (value >> 0) & 0xFF;
 
-    CANMessage txMsg(tx_id, txData, 4, CANMessage::CANData, CANMessage::CANExtended);
+    CANMessage txMsg(tx_id, txData, 4, CANMessage::CANExtended, CANMessage::CANData);
     
     // 送信がバスに書き込まれるまで待つ
     while (!can_write(can, txMsg)) {

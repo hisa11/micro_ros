@@ -22,6 +22,7 @@
 #include "can.h"
 #include "dma.h"
 #include "lwip.h"
+#include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
@@ -101,6 +102,8 @@ int main(void)
   MX_USART3_UART_Init();
   MX_CAN1_Init();
   MX_CAN2_Init();
+  MX_TIM3_Init();
+  MX_CAN3_Init();
   /* USER CODE BEGIN 2 */
   char *test_msg = "=== System Booting ===\r\n";
   HAL_UART_Transmit(&huart3, (uint8_t *)test_msg, strlen(test_msg), 1000);

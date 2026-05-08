@@ -52,7 +52,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/custom_memory_manager.c
     Core/Src/udp_transport.c
     Core/Src/app.cpp
-    Core/Src/app.cpp
+    Core/Src/key.cpp
+    Core/Src/stick.cpp
     # Core/Src/dma_transport.c
 )
 
